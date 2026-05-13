@@ -27,7 +27,7 @@ public class JwtService {
     }
 
     private Claims extraerTodosLosClaims(String token) {
-        // Sintaxis moderna compatible con JJWT 0.12.6
+
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()

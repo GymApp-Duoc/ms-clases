@@ -24,9 +24,7 @@ public class ClaseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ClaseResponseDTO> obtenerPorId(@PathVariable Long id) {
-        return service.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return service.obtenerPorId(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/entrenador/{entrenadorId}")
@@ -41,16 +39,12 @@ public class ClaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClaseResponseDTO> actualizar(@PathVariable Long id, @Valid @RequestBody ClaseRequestDTO dto) {
-        return service.actualizar(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return service.actualizar(id, dto).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}/reducir-cupo")
     public ResponseEntity<ClaseResponseDTO> reducirCupo(@PathVariable Long id, @RequestParam Long miembroId) {
-        return service.reducirCupo(id, miembroId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return service.reducirCupo(id, miembroId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
