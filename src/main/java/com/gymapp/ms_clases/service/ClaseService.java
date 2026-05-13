@@ -15,7 +15,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,9 @@ public class ClaseService {
 
     @Value("${ms.suscripciones.url}")
     private String suscripcionesUrl;
+
+    @Value("${ms.gamificacion.url}")
+    private String gamificacionUrl;
 
     @Transactional(readOnly = true)
     public List<ClaseResponseDTO> listarTodas() {
@@ -89,7 +94,23 @@ public class ClaseService {
                 throw new BusinessException("Aforo completo para: " + clase.getNombre());
             }
             clase.setCapacidad(clase.getCapacidad() - 1);
-            return mapearADto(repository.save(clase));
+            Clase claseGuardada = repository.save(clase);
+
+
+            try {
+                Map<String, Object> evento = new HashMap<>();
+                evento.put("miembroId", miembroId);
+                evento.put("accion", "ASISTENCIA_CLASE");
+                evento.put("puntosBase", 20); // Puntos otorgados
+
+                restTemplate.postForObject(gamificacionUrl + "/api/gamificacion/eventos", evento, Object.class);
+                log.info("Evento de asistencia enviado a Gamificación exitosamente para el miembro {}", miembroId);
+            } catch (Exception e) {
+                log.error("Aviso: No se pudieron enviar los puntos a Gamificación. Detalle: {}", e.getMessage());
+            }
+
+
+            return mapearADto(claseGuardada);
         });
     }
 

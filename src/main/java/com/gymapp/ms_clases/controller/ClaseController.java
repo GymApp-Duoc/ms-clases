@@ -5,6 +5,7 @@ import com.gymapp.ms_clases.dto.ClaseResponseDTO;
 import com.gymapp.ms_clases.service.ClaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class ClaseController {
 
     @PostMapping
     public ResponseEntity<ClaseResponseDTO> crear(@Valid @RequestBody ClaseRequestDTO dto) {
-        return ResponseEntity.status(201).body(service.crear(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(dto));
     }
 
     @PutMapping("/{id}")
