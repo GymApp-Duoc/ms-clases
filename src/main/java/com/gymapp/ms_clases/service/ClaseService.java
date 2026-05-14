@@ -41,6 +41,9 @@ public class ClaseService {
     @Value("${ms.gamificacion.url}")
     private String gamificacionUrl;
 
+    @Value("${ms.notificaciones.url}")
+    private String notificacionesUrl;
+
     @Transactional(readOnly = true)
     public List<ClaseResponseDTO> listarTodas() {
         log.info("Consultando todas las clases");
@@ -64,7 +67,14 @@ public class ClaseService {
             throw new BusinessException("Ya existe una clase con el nombre: " + dto.getNombre());
         }
         validarEntrenadorExterno(dto.getEntrenadorId());
-        Clase clase = new Clase(null, dto.getNombre(), dto.getDisciplina(), dto.getCapacidad(), dto.getEntrenadorId());
+
+        Clase clase = new Clase();
+        clase.setNombre(dto.getNombre());
+        clase.setDisciplina(dto.getDisciplina());
+        clase.setCapacidad(dto.getCapacidad());
+        clase.setEntrenadorId(dto.getEntrenadorId());
+        clase.setActiva(true); // Se inicializa activa por defecto
+
         return mapearADto(repository.save(clase));
     }
 
@@ -90,9 +100,15 @@ public class ClaseService {
     public Optional<ClaseResponseDTO> reducirCupo(Long id, Long miembroId) {
         return repository.findById(id).map(clase -> {
             validarMiembroSuscripcion(miembroId);
+
+            if (!clase.isActiva()) {
+                throw new BusinessException("Esta clase se encuentra inactiva.");
+            }
+
             if (clase.getCapacidad() <= 0) {
                 throw new BusinessException("Aforo completo para: " + clase.getNombre());
             }
+
             clase.setCapacidad(clase.getCapacidad() - 1);
             Clase claseGuardada = repository.save(clase);
 
@@ -101,7 +117,7 @@ public class ClaseService {
                 Map<String, Object> evento = new HashMap<>();
                 evento.put("miembroId", miembroId);
                 evento.put("accion", "ASISTENCIA_CLASE");
-                evento.put("puntosBase", 20); // Puntos otorgados
+                evento.put("puntosBase", 20);
 
                 restTemplate.postForObject(gamificacionUrl + "/api/gamificacion/eventos", evento, Object.class);
                 log.info("Evento de asistencia enviado a Gamificación exitosamente para el miembro {}", miembroId);
@@ -110,14 +126,30 @@ public class ClaseService {
             }
 
 
+            try {
+                Map<String, Object> notificacion = new HashMap<>();
+                notificacion.put("miembroId", miembroId);
+                notificacion.put("titulo", "¡Reserva Confirmada!");
+                notificacion.put("mensaje", "Te esperamos en la clase de " + clase.getDisciplina() + ". ¡Prepárate para sudar!");
+
+                restTemplate.postForObject(notificacionesUrl + "/api/notificaciones", notificacion, Object.class);
+                log.info("Notificación de reserva enviada al miembro {}", miembroId);
+            } catch (Exception e) {
+                log.error("Aviso: No se pudo enviar la notificación de reserva. Detalle: {}", e.getMessage());
+            }
+
             return mapearADto(claseGuardada);
         });
     }
 
+
     @Transactional
     public void eliminar(Long id) {
-        repository.deleteById(id);
-        log.info("Clase eliminada: {}", id);
+        repository.findById(id).ifPresent(clase -> {
+            clase.setActiva(false);
+            repository.save(clase);
+            log.info("Clase desactivada (borrado lógico): {}", id);
+        });
     }
 
     private void validarEntrenadorExterno(Long id) {
@@ -154,7 +186,15 @@ public class ClaseService {
         }
     }
 
+
     private ClaseResponseDTO mapearADto(Clase clase) {
-        return new ClaseResponseDTO(clase.getId(), clase.getNombre(), clase.getDisciplina(), clase.getCapacidad(), clase.getEntrenadorId());
+        return ClaseResponseDTO.builder()
+                .id(clase.getId())
+                .nombre(clase.getNombre())
+                .disciplina(clase.getDisciplina())
+                .capacidad(clase.getCapacidad())
+                .entrenadorId(clase.getEntrenadorId())
+                .activa(clase.isActiva())
+                .build();
     }
 }

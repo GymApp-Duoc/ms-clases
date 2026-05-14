@@ -5,20 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "clases")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "clases")
 public class Clase {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String disciplina;
 
     @Column(nullable = false)
@@ -26,4 +27,8 @@ public class Clase {
 
     @Column(name = "entrenador_id", nullable = false)
     private Long entrenadorId;
+
+
+    @Column(nullable = false)
+    private boolean activa = true;
 }
