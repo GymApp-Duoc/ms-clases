@@ -122,13 +122,11 @@ public class ClaseService implements ClaseServiceInt {
         });
     }
 
-
-
     private void validarEntrenadorExterno(Long id) {
         try {
             entrenadorClient.obtenerEntrenador(id);
         } catch (FeignException.NotFound e) {
-            throw new RecursoNoEncontradoException("Entrenador ID " + id + " no encontrado.");
+            throw new RecursoNoEncontradoException("Entrenador ID " + id + " no encontrado en el sistema.");
         } catch (FeignException e) {
             log.error("Error comunicándose con el servicio de entrenadores", e);
             throw new BusinessException("Servicio de entrenadores no disponible en este momento.");
@@ -139,7 +137,7 @@ public class ClaseService implements ClaseServiceInt {
         try {
             miembroClient.obtenerPorId(miembroId);
         } catch (FeignException.NotFound e) {
-            throw new RecursoNoEncontradoException("Regla de negocio: El miembro ID " + miembroId + " no existe.");
+            throw new RecursoNoEncontradoException("El miembro ID " + miembroId + " no existe.");
         } catch (FeignException e) {
             log.error("Error comunicándose con el servicio de miembros", e);
             throw new BusinessException("Servicio de miembros no disponible en este momento.");
@@ -148,8 +146,8 @@ public class ClaseService implements ClaseServiceInt {
         try {
             suscripcionClient.verificarEstado(miembroId);
         } catch (FeignException e) {
-            log.error("Error comunicándose con el servicio de suscripciones o sin suscripción activa", e);
-            throw new BusinessException("Regla de negocio: El miembro ID " + miembroId + " no tiene una suscripción activa.");
+            log.error("Error en servicio de suscripciones o sin suscripción activa", e);
+            throw new BusinessException("El miembro ID " + miembroId + " no tiene una suscripción activa.");
         }
     }
 

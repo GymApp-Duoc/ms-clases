@@ -13,7 +13,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException ex) {
         Map<String, Object> respuesta = new HashMap<>();
@@ -25,6 +24,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(respuesta, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("timestamp", LocalDateTime.now());
+        respuesta.put("estado", HttpStatus.NOT_FOUND.value());
+        respuesta.put("codigo", "RECURSO_NO_ENCONTRADO");
+        respuesta.put("mensaje", ex.getMessage());
+
+        return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -40,5 +49,16 @@ public class GlobalExceptionHandler {
         respuesta.put("detalles", errores);
 
         return new ResponseEntity<>(respuesta, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("timestamp", LocalDateTime.now());
+        respuesta.put("estado", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        respuesta.put("codigo", "ERROR_INTERNO");
+        respuesta.put("mensaje", "Falla inesperada en el servidor: " + ex.getMessage());
+
+        return new ResponseEntity<>(respuesta, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
