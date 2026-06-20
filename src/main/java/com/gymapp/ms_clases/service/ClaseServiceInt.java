@@ -21,4 +21,11 @@ public interface ClaseServiceInt {
     Optional<ClaseResponseDTO> reducirCupo(Long id, Long miembroId);
 
     void eliminar(Long id);
+
+
+    List<ClaseResponseDTO> obtenerClasesDisponibles();
+    List<ClaseResponseDTO> obtenerPorDisciplina(String disciplina);
+    List<ClaseResponseDTO> obtenerClasesCasiLlenas();
+    long contarClasesPorEntrenador(Long entrenadorId);
+    List<ClaseResponseDTO> obtenerClasesInactivas();
 }

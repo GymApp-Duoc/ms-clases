@@ -123,7 +123,6 @@ public class ClaseService implements ClaseServiceInt {
     }
 
 
-
     private void validarEntrenadorExterno(Long id) {
         try {
             entrenadorClient.obtenerEntrenador(id);
@@ -189,4 +188,45 @@ public class ClaseService implements ClaseServiceInt {
                 .activa(clase.isActiva())
                 .build();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClaseResponseDTO> obtenerClasesDisponibles() {
+        log.info("Generando reporte: Clases disponibles");
+        return repository.findClasesDisponibles().stream()
+                .map(this::mapearADto).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClaseResponseDTO> obtenerPorDisciplina(String disciplina) {
+        log.info("Generando reporte: Clases de la disciplina {}", disciplina);
+        return repository.findByDisciplinaActiva(disciplina).stream()
+                .map(this::mapearADto).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClaseResponseDTO> obtenerClasesCasiLlenas() {
+        log.info("Generando reporte: Clases casi llenas");
+        return repository.findClasesCasiLlenas().stream()
+                .map(this::mapearADto).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarClasesPorEntrenador(Long entrenadorId) {
+        log.info("Generando reporte: Conteo de clases activas para el entrenador {}", entrenadorId);
+        validarEntrenadorExterno(entrenadorId); // Reutilizamos la validación Feign
+        return repository.countClasesActivasPorEntrenador(entrenadorId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClaseResponseDTO> obtenerClasesInactivas() {
+        log.info("Generando reporte: Clases inactivas o canceladas");
+        return repository.findClasesInactivas().stream()
+                .map(this::mapearADto).collect(Collectors.toList());
+    }
+
 }
