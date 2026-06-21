@@ -5,13 +5,14 @@ spring:
   application:
     name: ms-clases
   datasource:
-    url: jdbc:mysql://localhost:3306/db_gym_clases?createDatabaseIfNotExist=true&serverTimezone=UTC
+
+    url: jdbc:mysql://host.docker.internal:3307/db_gym_clases?createDatabaseIfNotExist=true&serverTimezone=UTC
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
   flyway:
@@ -21,15 +22,15 @@ spring:
 # URLs de los otros microservicios (Feign)
 ms:
   entrenadores:
-    url: http://localhost:8081
+    url: http://host.docker.internal:8081
   miembros:
-    url: http://localhost:8083
+    url: http://host.docker.internal:8083
   suscripciones:
-    url: http://localhost:8084
+    url: http://host.docker.internal:8084
   gamificacion:
-    url: http://localhost:8089
+    url: http://host.docker.internal:8089
   notificaciones:
-    url: http://localhost:8091
+    url: http://host.docker.internal:8091
 
 jwt:
   secret: TXV5TGdyYVNlZ3VyYVBhcmFHeW1TeW5jMjAyNkNvbnRyYXNlbmE=
@@ -37,9 +38,8 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://host.docker.internal:8761/eureka/
 
-# Configuracion Swagger OpenAPI
 springdoc:
   api-docs:
     path: /api-docs

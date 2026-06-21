@@ -122,10 +122,7 @@ public class ClaseService implements ClaseServiceInt {
         });
     }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> f800bfb01911299a7c21a88cf0261110e40829dd
     private void validarEntrenadorExterno(Long id) {
         try {
             entrenadorClient.obtenerEntrenador(id);

@@ -11,7 +11,7 @@
 	<groupId>com.gymapp</groupId>
 	<artifactId>ms-clases</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ms-clases</name>
+	<name>ms-entrenadores</name>
 
 	<properties>
 		<java.version>17</java.version>
@@ -98,7 +98,6 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
